@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -80,6 +82,7 @@ public class ChangeAccountSettingActivity extends AppCompatActivity {
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mToolbar.setTitle("Account Info");
@@ -152,12 +155,12 @@ public class ChangeAccountSettingActivity extends AppCompatActivity {
                             if (task.isSuccessful())
                             {
                                 mprogress.dismiss();
-                                Toast.makeText(getApplicationContext(),"Succesfully changed the DOB ",Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(),"Succesfully changed the Age ",Toast.LENGTH_LONG).show();
                             }
                             else
                             {
                                 mprogress.dismiss();
-                                Toast.makeText(getApplicationContext(),"Error has been occured while changing the DOB",Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(),"Error has been occured while changing the Age",Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -174,5 +177,23 @@ public class ChangeAccountSettingActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),"Network Not Available",Toast.LENGTH_LONG).show();
         }
 
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId())
+        {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return false;
     }
 }

@@ -45,17 +45,24 @@ public class CreateLoginActivity extends AppCompatActivity {
                 String email=mEmail.getEditText().getText().toString();
                 String pass=mPassword.getEditText().getText().toString();
                 String dob=mDob.getEditText().getText().toString();
-                if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass) && !TextUtils.isEmpty(dob))
-                {
-                    mprogress.setTitle("Registering User");
-                    mprogress.setMessage("Please wait while we registering ");
-                    mprogress.setCanceledOnTouchOutside(false);
-                    mprogress.show();
-                    createUser(name,email,pass,dob);
+
+                if (Util.isInternetConnection(getApplicationContext())==true) {
+                        if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass) && !TextUtils.isEmpty(dob))
+                        {
+                            mprogress.setTitle("Registering User");
+                            mprogress.setMessage("Please wait while we registering ");
+                            mprogress.setCanceledOnTouchOutside(false);
+                            mprogress.show();
+                            createUser(name,email,pass,dob);
+                        }
+                        else
+                        {
+                            Toast.makeText(getApplicationContext(),"Please Fill Details Properly",Toast.LENGTH_SHORT).show();
+                        }
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(),"Please Fill Details Properly",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Network Not Available",Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -72,9 +79,11 @@ public class CreateLoginActivity extends AppCompatActivity {
         mtoolbar=(Toolbar)findViewById(R.id.register_toolbar);
 
         setSupportActionBar(mtoolbar);
-        getSupportActionBar().setTitle("Create Account");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        mtoolbar.setTitle("Create Account");
+        mtoolbar.setTitleTextColor(getApplicationContext().getResources().getColor(R.color.white));
         mprogress=new ProgressDialog(CreateLoginActivity.this);
     }
 

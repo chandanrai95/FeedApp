@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -48,8 +50,14 @@ public class PostCreateActivity extends AppCompatActivity {
                     mprogress.setTitle("Adding Feedbacks");
                     mprogress.setMessage("Please wait while we Adding Your Feedbacks");
                     mprogress.setCanceledOnTouchOutside(false);
+                    if (Util.isInternetConnection(getApplicationContext())==true) {
+                        createPost(feed,name,email);
+                    }
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(),"Network Not Available",Toast.LENGTH_LONG).show();
+                    }
 
-                    createPost(feed,name,email);
                 }
                 else {
                     Toast.makeText(getApplicationContext(),"Please Fill Details Properly",Toast.LENGTH_SHORT).show();
@@ -74,7 +82,10 @@ public class PostCreateActivity extends AppCompatActivity {
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Create Feedbacks");
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        mToolbar.setTitle("Create Feedback");
+        mToolbar.setTitleTextColor(getApplicationContext().getResources().getColor(R.color.white));
 
         mprogress=new ProgressDialog(PostCreateActivity.this);
     }
@@ -85,7 +96,7 @@ public class PostCreateActivity extends AppCompatActivity {
         mDataBaseReference= FirebaseDatabase.getInstance().getReference().child("Feedbacks").child(currentUser.getUid()+count);
         HashMap<String,String> dataMap=new HashMap<>();
         dataMap.put("feed",Feed);
-        dataMap.put("createdby",name+","+email);
+        dataMap.put("createdby",name);
         mDataBaseReference.setValue(dataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -100,5 +111,22 @@ public class PostCreateActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId())
+        {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return false;
     }
 }

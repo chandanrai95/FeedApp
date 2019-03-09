@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -76,7 +77,15 @@ public class DashboardActivity extends AppCompatActivity {
         mprogress=new ProgressDialog(DashboardActivity.this);
         mDatabaseRefer= FirebaseDatabase.getInstance().getReference().child("Users").child(currentUser.getUid());
 
-        getuserData();
+        if (Util.isInternetConnection(getApplicationContext())==true) {
+            getuserData();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(),"Network Not Available",Toast.LENGTH_LONG).show();
+        }
+
+
 
     }
 
@@ -90,7 +99,7 @@ public class DashboardActivity extends AppCompatActivity {
         mDatabaseRefer.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                mprogress.dismiss();
+
                 getSupportActionBar().setTitle(dataSnapshot.child("Name").getValue().toString());
                 Name=dataSnapshot.child("Name").getValue().toString();
                 Email=dataSnapshot.child("Email").getValue().toString();
@@ -103,7 +112,7 @@ public class DashboardActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                mprogress.dismiss();
+
             }
         });
     }
@@ -116,11 +125,13 @@ public class DashboardActivity extends AppCompatActivity {
             protected void populateViewHolder(final FeedAdapter viewHolder, final Feedbacks model, int position) {
 
                 viewHolder.feed.setText(model.getFeed());
-
+                viewHolder.createdby.setText("Created By : "+model.getCreatedby());
             }
 
         };
         FeedbackList.setAdapter(firebaseListAdapter);
+        mprogress.dismiss();
+        mprogress.dismiss();
     }
 
     @Override
@@ -158,20 +169,5 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 
-    public static class UsersViewholder extends RecyclerView.ViewHolder {
 
-        View mView;
-        ImageView Uimage;
-        TextView UName,Ustatus;
-        RelativeLayout detaillay;
-
-        public UsersViewholder(View itemView) {
-            super(itemView);
-            mView=itemView;
-
-            UName=(TextView) itemView.findViewById(R.id.feed_txt);
-
-
-        }
-    }
 }

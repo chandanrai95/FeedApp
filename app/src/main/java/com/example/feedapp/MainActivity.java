@@ -39,17 +39,25 @@ public class MainActivity extends AppCompatActivity {
                 String email=memail.getEditText().getText().toString();
                 String pass=mpassword.getEditText().getText().toString();
 
-                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass))
+                if (Util.isInternetConnection(getApplicationContext())==true) {
+                        if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass))
+                        {
+                            mLoginProgress.setTitle("Logging in");
+                            mLoginProgress.setMessage("Please wait while we checking your credentials");
+                            mLoginProgress.setCanceledOnTouchOutside(false);
+                            mLoginProgress.show();
+                            LoginWithEmail(email,pass);
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(),"Please Fill Details Properly",Toast.LENGTH_SHORT).show();
+                        }
+                }
+                else
                 {
-                    mLoginProgress.setTitle("Logging in");
-                    mLoginProgress.setMessage("Please wait while we checking your credentials");
-                    mLoginProgress.setCanceledOnTouchOutside(false);
-                    mLoginProgress.show();
-                    LoginWithEmail(email,pass);
+                    Toast.makeText(getApplicationContext(),"Network Not Available",Toast.LENGTH_LONG).show();
                 }
-                else {
-                    Toast.makeText(getApplicationContext(),"Please Fill Details Properly",Toast.LENGTH_SHORT).show();
-                }
+
+
 
             }
         });
@@ -74,7 +82,9 @@ public class MainActivity extends AppCompatActivity {
         mFireAuth=FirebaseAuth.getInstance();
 
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Login");
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        mToolbar.setTitle("Login");
+        mToolbar.setTitleTextColor(getApplicationContext().getResources().getColor(R.color.white));
     }
 
     private void LoginWithEmail(String email, String pass)
