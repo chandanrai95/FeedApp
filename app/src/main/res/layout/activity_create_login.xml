@@ -80,7 +80,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="DOB"
+            android:hint="Age"
             android:inputType="number"/>
 
     </android.support.design.widget.TextInputLayout>
