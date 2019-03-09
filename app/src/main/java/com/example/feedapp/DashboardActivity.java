@@ -37,7 +37,7 @@ public class DashboardActivity extends AppCompatActivity {
     private FloatingActionButton mCreatePost;
     private DatabaseReference mDatabaseRefer;
     private String Name,Email;private
-    ProgressDialog mprogress;
+        ProgressDialog mprogress;
     private RecyclerView FeedbackList;
 
 
@@ -137,7 +137,7 @@ public class DashboardActivity extends AppCompatActivity {
         switch (item.getItemId())
         {
             case R.id.change_info:
-
+                startActivity(new Intent(DashboardActivity.this,ChangeAccountSettingActivity.class));
                 break;
             case R.id.logout:
                 firebaseAuth.signOut();

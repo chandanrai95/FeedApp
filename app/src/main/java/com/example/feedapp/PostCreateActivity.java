@@ -29,7 +29,8 @@ public class PostCreateActivity extends AppCompatActivity {
     private Button mPost;
     private DatabaseReference mDataBaseReference;
     private FirebaseUser currentUser;
-    private String name,email,count;
+    private String name,email;
+    private int count;
     ProgressDialog mprogress;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +65,7 @@ public class PostCreateActivity extends AppCompatActivity {
 
         name=intent.getStringExtra("name");
         email=intent.getStringExtra("email");
-        count=intent.getStringExtra("count");
+        count=intent.getIntExtra("count",0);
 
         mFireAuth=FirebaseAuth.getInstance();
         mToolbar=(Toolbar) findViewById(R.id.post_toolbar);
