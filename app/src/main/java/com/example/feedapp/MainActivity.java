@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -74,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Login");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void LoginWithEmail(String email, String pass)
@@ -86,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
                     {
                         mLoginProgress.dismiss();
                         Toast.makeText(MainActivity.this,"Login Succesfully",Toast.LENGTH_LONG).show();
-                        Intent intent=new Intent(getApplicationContext(),MainActivity.class);
+                        Intent intent=new Intent(getApplicationContext(),DashboardActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     }
                     else {
@@ -96,5 +97,18 @@ public class MainActivity extends AppCompatActivity {
                     }
             }
         });
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser currentUser =mFireAuth.getCurrentUser();
+        if (currentUser!=null)
+        {
+            Intent intent=new Intent(getApplicationContext(),DashboardActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
     }
 }

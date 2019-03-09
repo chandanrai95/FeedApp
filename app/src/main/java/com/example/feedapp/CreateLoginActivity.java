@@ -18,11 +18,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 public class CreateLoginActivity extends AppCompatActivity {
 
-    private TextInputLayout mDisplayName,mEmail,mPassword;
+    private TextInputLayout mDisplayName,mDob,mEmail,mPassword;
     private Button mCreate;
     private FirebaseAuth mAuth=FirebaseAuth.getInstance();
     private Toolbar mtoolbar;
@@ -40,13 +44,14 @@ public class CreateLoginActivity extends AppCompatActivity {
                 String name=mDisplayName.getEditText().getText().toString();
                 String email=mEmail.getEditText().getText().toString();
                 String pass=mPassword.getEditText().getText().toString();
-                if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass))
+                String dob=mDob.getEditText().getText().toString();
+                if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass) && !TextUtils.isEmpty(dob))
                 {
                     mprogress.setTitle("Registering User");
                     mprogress.setMessage("Please wait while we registering ");
                     mprogress.setCanceledOnTouchOutside(false);
                     mprogress.show();
-                    createUser(name,email,pass);
+                    createUser(name,email,pass,dob);
                 }
                 else
                 {
@@ -60,6 +65,7 @@ public class CreateLoginActivity extends AppCompatActivity {
     public void init()
     {
         mDisplayName=(TextInputLayout) findViewById(R.id.name);
+        mDob=(TextInputLayout) findViewById(R.id.dob);
         mEmail=(TextInputLayout) findViewById(R.id.email);
         mPassword=(TextInputLayout) findViewById(R.id.password);
         mCreate=(Button) findViewById(R.id.create_id);
@@ -72,7 +78,7 @@ public class CreateLoginActivity extends AppCompatActivity {
         mprogress=new ProgressDialog(CreateLoginActivity.this);
     }
 
-    public void createUser(String Name, String Email, String Pass)
+    public void createUser(final String Name, final String Email, String Pass, final String dob)
     {
         mAuth.createUserWithEmailAndPassword(Email,Pass)
         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -82,6 +88,16 @@ public class CreateLoginActivity extends AppCompatActivity {
                 mprogress.dismiss();
                 if(task.isSuccessful())
                 {
+                    FirebaseUser currentUser=FirebaseAuth.getInstance().getCurrentUser();
+                    mdatabaseRefer= FirebaseDatabase.getInstance().getReference().child("Users").child(currentUser.getUid());
+
+                    HashMap<String,String> dataMap =new HashMap<>();
+                    dataMap.put("Name",Name);
+                    dataMap.put("Email",Email);
+                    dataMap.put("DOB",dob);
+
+                    mdatabaseRefer.setValue(dataMap);
+
                     Toast.makeText(getApplicationContext(),"Registered Succesfully",Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(CreateLoginActivity.this,MainActivity.class));
                 }
