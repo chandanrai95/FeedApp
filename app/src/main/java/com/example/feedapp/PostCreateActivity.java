@@ -29,7 +29,7 @@ public class PostCreateActivity extends AppCompatActivity {
     private Button mPost;
     private DatabaseReference mDataBaseReference;
     private FirebaseUser currentUser;
-    private String name,email;
+    private String name,email,count;
     ProgressDialog mprogress;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +44,8 @@ public class PostCreateActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(feed) && !TextUtils.isEmpty(name) && !TextUtils.isEmpty(email))
                 {
                     mprogress.show();
-                    mprogress.setTitle("Adding Feedback");
-                    mprogress.setMessage("Please wait while we Adding Your Feedback");
+                    mprogress.setTitle("Adding Feedbacks");
+                    mprogress.setMessage("Please wait while we Adding Your Feedbacks");
                     mprogress.setCanceledOnTouchOutside(false);
 
                     createPost(feed,name,email);
@@ -64,6 +64,7 @@ public class PostCreateActivity extends AppCompatActivity {
 
         name=intent.getStringExtra("name");
         email=intent.getStringExtra("email");
+        count=intent.getStringExtra("count");
 
         mFireAuth=FirebaseAuth.getInstance();
         mToolbar=(Toolbar) findViewById(R.id.post_toolbar);
@@ -72,7 +73,7 @@ public class PostCreateActivity extends AppCompatActivity {
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Create Feedback");
+        getSupportActionBar().setTitle("Create Feedbacks");
 
         mprogress=new ProgressDialog(PostCreateActivity.this);
     }
@@ -80,17 +81,18 @@ public class PostCreateActivity extends AppCompatActivity {
     private void createPost(String Feed,String name, String email)
     {
         currentUser=mFireAuth.getCurrentUser();
-        mDataBaseReference= FirebaseDatabase.getInstance().getReference().child("Post").child(currentUser.getUid());
+        mDataBaseReference= FirebaseDatabase.getInstance().getReference().child("Feedbacks").child(currentUser.getUid()+count);
         HashMap<String,String> dataMap=new HashMap<>();
-        dataMap.put("Feed",Feed);
-        dataMap.put("Created By",name+","+email);
+        dataMap.put("feed",Feed);
+        dataMap.put("createdby",name+","+email);
         mDataBaseReference.setValue(dataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 mprogress.dismiss();
                 if (task.isSuccessful())
                 {
-                    Toast.makeText(getApplicationContext(),"Feedback Added Successfully",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Feedbacks Added Successfully",Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(PostCreateActivity.this,DashboardActivity.class));
                 }
                 else {
                     Toast.makeText(getApplicationContext(),"Error Occured",Toast.LENGTH_SHORT).show();

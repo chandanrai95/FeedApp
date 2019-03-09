@@ -1,15 +1,26 @@
 package com.example.feedapp;
 
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,6 +38,7 @@ public class DashboardActivity extends AppCompatActivity {
     private DatabaseReference mDatabaseRefer;
     private String Name,Email;private
     ProgressDialog mprogress;
+    private RecyclerView FeedbackList;
 
 
     @Override
@@ -41,6 +53,7 @@ public class DashboardActivity extends AppCompatActivity {
                 Intent intent=new Intent(DashboardActivity.this,PostCreateActivity.class);
                 intent.putExtra("name",Name);
                 intent.putExtra("email",Email);
+                intent.putExtra("count",FeedbackList.getAdapter().getItemCount());
                 startActivity(intent);
             }
         });
@@ -52,6 +65,8 @@ public class DashboardActivity extends AppCompatActivity {
         currentUser=firebaseAuth.getCurrentUser();
         mToolbar=(Toolbar) findViewById(R.id.dashboard_toolbar);
         mCreatePost=(FloatingActionButton) findViewById(R.id.create_post_btn);
+        FeedbackList=(RecyclerView) findViewById(R.id.feedback_list);
+        FeedbackList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_person_black_24dp);
@@ -82,6 +97,8 @@ public class DashboardActivity extends AppCompatActivity {
 
                 mToolbar.setTitle(dataSnapshot.child("Name").getValue().toString());
                 mToolbar.setTitleTextColor(getApplicationContext().getResources().getColor(R.color.white));
+                setFeedList();
+
             }
 
             @Override
@@ -89,6 +106,21 @@ public class DashboardActivity extends AppCompatActivity {
                 mprogress.dismiss();
             }
         });
+    }
+
+    private void setFeedList()
+    {
+        mDatabaseRefer= FirebaseDatabase.getInstance().getReference().child("Feedbacks");
+        FirebaseRecyclerAdapter<Feedbacks,FeedAdapter> firebaseListAdapter=new FirebaseRecyclerAdapter<Feedbacks, FeedAdapter>(Feedbacks.class,R.layout.feedback_list_adapter,FeedAdapter.class,mDatabaseRefer) {
+            @Override
+            protected void populateViewHolder(final FeedAdapter viewHolder, final Feedbacks model, int position) {
+
+                viewHolder.feed.setText(model.getFeed());
+
+            }
+
+        };
+        FeedbackList.setAdapter(firebaseListAdapter);
     }
 
     @Override
@@ -114,5 +146,32 @@ public class DashboardActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    public static class FeedAdapter extends RecyclerView.ViewHolder{
+        TextView feed,createdby;
+
+        public FeedAdapter(@NonNull View itemView) {
+            super(itemView);
+            feed=(TextView) itemView.findViewById(R.id.feed_txt);
+            createdby=(TextView) itemView.findViewById(R.id.creat_by_txt);
+        }
+    }
+
+    public static class UsersViewholder extends RecyclerView.ViewHolder {
+
+        View mView;
+        ImageView Uimage;
+        TextView UName,Ustatus;
+        RelativeLayout detaillay;
+
+        public UsersViewholder(View itemView) {
+            super(itemView);
+            mView=itemView;
+
+            UName=(TextView) itemView.findViewById(R.id.feed_txt);
+
+
+        }
     }
 }
