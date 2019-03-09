@@ -1,13 +1,16 @@
 package com.example.feedapp;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -19,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mFireAuth;
     private Toolbar mToolbar;
     private TextInputLayout memail,mpassword;
-    private Button mLogin;
+    private Button mLogin, mCreate;
     private ProgressDialog mLoginProgress;
 
     @Override
@@ -35,7 +38,25 @@ public class MainActivity extends AppCompatActivity {
                 String email=memail.getEditText().getText().toString();
                 String pass=mpassword.getEditText().getText().toString();
 
-                LoginWithEmail(email,pass);
+                if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass))
+                {
+                    mLoginProgress.setTitle("Logging in");
+                    mLoginProgress.setMessage("Please wait while we checking your credentials");
+                    mLoginProgress.setCanceledOnTouchOutside(false);
+                    mLoginProgress.show();
+                    LoginWithEmail(email,pass);
+                }
+                else {
+                    Toast.makeText(getApplicationContext(),"Please Fill Details Properly",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+        mCreate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,CreateLoginActivity.class));
             }
         });
     }
@@ -46,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         memail=(TextInputLayout) findViewById(R.id.textInputLayout);
         mpassword=(TextInputLayout) findViewById(R.id.textInputLayout2);
         mLogin=(Button) findViewById(R.id.login_bt);
+        mCreate=(Button) findViewById(R.id.create_bt);
         mLoginProgress=new ProgressDialog(MainActivity.this);
         mToolbar=(Toolbar)findViewById(R.id.login_toolbar);
         mFireAuth=FirebaseAuth.getInstance();
@@ -62,9 +84,14 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful())
                     {
-
+                        mLoginProgress.dismiss();
+                        Toast.makeText(MainActivity.this,"Login Succesfully",Toast.LENGTH_LONG).show();
+                        Intent intent=new Intent(getApplicationContext(),MainActivity.class);
+                        startActivity(intent);
                     }
                     else {
+                        mLoginProgress.dismiss();
+                        Toast.makeText(MainActivity.this,"Something went wrong Please check your credentials", Toast.LENGTH_LONG).show();
 
                     }
             }

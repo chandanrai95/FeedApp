@@ -1,12 +1,15 @@
 package com.example.feedapp;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -39,6 +42,10 @@ public class CreateLoginActivity extends AppCompatActivity {
                 String pass=mPassword.getEditText().getText().toString();
                 if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass))
                 {
+                    mprogress.setTitle("Registering User");
+                    mprogress.setMessage("Please wait while we registering ");
+                    mprogress.setCanceledOnTouchOutside(false);
+                    mprogress.show();
                     createUser(name,email,pass);
                 }
                 else
@@ -71,14 +78,34 @@ public class CreateLoginActivity extends AppCompatActivity {
         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+
+                mprogress.dismiss();
                 if(task.isSuccessful())
                 {
                     Toast.makeText(getApplicationContext(),"Registered Succesfully",Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(CreateLoginActivity.this,MainActivity.class));
                 }
                 else {
                     Toast.makeText(getApplicationContext(),"Error Occured",Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId())
+        {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return false;
     }
 }
